@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <regex.h>
 #include "anagrame.h"
 
 /* 
@@ -12,10 +13,14 @@
 ** de malipulação das palavras do jogo Anagra-me
 */
 
-char* escolher_Palavra (char dificuldade[11], int tam)
+char* escolher_palavra (char dificuldade[11], int tam)
 {
-    char *palavra_Escolhida;
+    // String contendo uma palavra escolhida aleatoriamente do nível desejado
+    char *palavra_escolhida;
+    // Inteiro contendo um index aleatório para ler uma palavra nos arquivos de nível 
     int n;
+    // Variável RegEx para validação da palavra escolhida
+    regex_t regex;
 
     FILE* arq = fopen(dificuldade, "r");
     if(!arq) 
@@ -24,34 +29,40 @@ char* escolher_Palavra (char dificuldade[11], int tam)
         exit(1);
     }
 
-    if( !(palavra_Escolhida = (char*) calloc(tam, sizeof(char))) )
+    if( !(palavra_escolhida = (char*) calloc(tam, sizeof(char))) )
     {
         puts("Erro de memoria!! Encerrando o jogo.");
         exit(1);
     }
 
-    srand((unsigned) time(NULL)); 
-    n = 0 + (rand()) % 20; // as linhas vão de 0 até 20
-    // configurando o n para a fseek funcionar
-    n = n*(tam + 1);
-    
-    fseek(arq, n, SEEK_SET);
-    fgets(palavra_Escolhida, tam, arq);
-
-    for(int i = 0; i < tam; i++)
+    if( regcomp(&regex, "[:alpha:]", 0) != 0 ) // Compilando um padrão com apenas letras maiúsculas e minúsculas
     {
-        if( (palavra_Escolhida[i] == 32) || (palavra_Escolhida[i] == 45) ) 
-        {
-            escolher_Palavra( dificuldade, tam );
-        }
-           
+        puts("Falha ao compilar o RegEx!! Encerrando o jogo.");
+        exit(1);
     }
+
+    srand((unsigned) time(NULL)); 
+    n = tam * (rand() % 20);  // Delimita o index até a 5000ª palavra do arquivo
+
+    fseek(arq, n, SEEK_SET);
+    fgets(palavra_escolhida, tam, arq);
+
+    //puts(palavra_escolhida);
+    // for(int i = 0; i < tam; i++)
+    // {
+    //     if( regexec(&regex, palavra_escolhida, 0, NULL, 0) != 0) 
+    //     {
+    //         puts("entrei na recursao");
+    //         palavra_escolhida = escolher_palavra( dificuldade, tam );
+    //         break;
+    //     }
+    // }
     
 	fclose(arq);
-    return palavra_Escolhida;
+    return palavra_escolhida;
 }
 
-int validar_Palavra(FILE *arquivo, char *palavra_proc, int tam, char *letras_Disponiveis, int acertos, char *palavras_pontuadas[])
+int validar_palavra(char *palavra_proc, int tam, char *letras_Disponiveis, char *palavras_pontuadas[], int acertos)
 {
     //A FUNÇÃO RETORNA ZERO SE A PALAVRA É VÁLIDA
     char palavra_test[tam];
@@ -104,20 +115,17 @@ int validar_Palavra(FILE *arquivo, char *palavra_proc, int tam, char *letras_Dis
         letras_Disponiveis[i] = guarda_letras_Disponiveis[i];
     
     // Validando se a palavra existe no dicionário
-    fseek(arquivo, 0, SEEK_SET); 
-    while ( !feof(arquivo) )
+    for (int i = 0; i < TAM_DIC; i++)
     {
-        fgets(palavra_test, tam, arquivo);
-        if( (strcmp(palavra_proc, palavra_test) == 0) ){
+        if( strcmp(palavra_proc, dicionario[i]) == 0 ){
             return 0;
-			fclose(arquivo);
-		}
+        }
     }
-	fclose(arquivo);
+
 	return 5;
 }
 
-int guarda_Palavra_Valida(char *palavras_pontuadas[], int cont_palavras, char *palavra)
+int guarda_palavra_valida(char *palavra, char *palavras_pontuadas[], int cont_palavras)
 {   
     if ( !(palavras_pontuadas[cont_palavras] = (char*) calloc(strlen(palavra), sizeof(char)))) // alocação do vetor que guarda as palavras
     {
@@ -130,7 +138,7 @@ int guarda_Palavra_Valida(char *palavras_pontuadas[], int cont_palavras, char *p
     return ++cont_palavras;        
 }
 
-char* ordenar (char *palavra_Escolhida)
+char* ordenar_alfabeticamente (char *palavra_Escolhida)
 {
     // ordenando a palavra de forma alfebetica 
 
@@ -151,7 +159,7 @@ char* ordenar (char *palavra_Escolhida)
     return palavra_Escolhida;
 }
 
-int calcular_Pontuacao(char* palavras_pontuadas[], int cont_palavras)
+int calcular_pontuacao(char* palavras_pontuadas[], int cont_palavras)
 {   
 	int pontuacao = 0;
 	for(int i = 0; i < cont_palavras; i++)

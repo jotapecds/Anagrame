@@ -20,18 +20,60 @@
 int inicializar()
 {
     system("color 0A");
-	jogo = (_PLAYER *) calloc(10, sizeof(_PLAYER));
-	num_jogos = 0;
-    cabecalho();
+
+    num_jogos = 0;
+    jogo = (_PLAYER *) calloc(10, sizeof(_PLAYER));
+
+    if(jogo == NULL || dicionario == NULL)
+    {
+        puts("\n\n>>> Falha na alocação de memória. Encerrando a execução.");
+        return -1;
+    }
+
+    FILE* arq = fopen("dicionario.txt", "r");
+    if( arq == NULL )
+    {
+        puts("\n\n>>> Falha ao abrir o arquivo < dicionario.txt >. Encerrando a execução.");
+        return -1;
+    }
+
+    char palavra[50]; 
+    int i = 0;
+    // Lê cada palavra do arquivo e armazena no vetor
+    while (fgets(palavra, 50, arq) != NULL && i < TAM_DIC) 
+    {
+        dicionario[i] = malloc(strlen(palavra) + 1);
+        strcpy(dicionario[i], palavra);
+        i++;
+    }
+
+	fclose(arq);
     return 0;
 }
 
 /*-------------------------------------------------------------------
                             Processa
 -------------------------------------------------------------------*/
-void processar()
+void processar(int op)
 {
-    mostrar_Menu();
+    switch (op)
+    {
+        case 0:
+            exibir_menu();
+            break;
+        case 1: 
+            jogar(NIVEL1); 
+            break;
+        case 2:
+            jogar(NIVEL2); 
+            break;
+        case 3: 
+            jogar(NIVEL3); 
+            break;
+        default: 
+            exibir_menu();
+            break;
+    }
 }
 
 /*-------------------------------------------------------------------
@@ -39,8 +81,12 @@ void processar()
 -------------------------------------------------------------------*/
 void terminar()
 {
-    puts("\n\n\t\t\t\t >>>> Ate mais! volte sempre! <<<<");
-    Sleep(1500);
+    for (int i = 0; i < TAM_DIC; i++) {
+        free(dicionario[i]);
+    }
+
+    puts("\n\n>>> Ate mais! volte sempre!");
+    sleep(2);
     system("color 0F");
     LIMPAR_TELA;
 }
@@ -48,55 +94,89 @@ void terminar()
 /*-------------------------------------------------------------------
                             Cabeçalho
 -------------------------------------------------------------------*/
-void cabecalho()
+void exibir_cabecalho(int op)
 {
+    if(op == 1)
+    {
+        LIMPAR_TELA;
+        puts("\n\n");
+        puts("\t|--------|");
+        puts("\t|        |");
+        puts("\t|        |");
+        puts("\t|--------|");
+        puts("\t|        |");
+        puts("\t|        |");
+        puts("\t|        |");
+        sleep(1);
+        LIMPAR_TELA;
+        puts("\n\n");
+        puts("\t|--------|    |\\      |    |--------|");
+        puts("\t|        |    | \\     |    |        |");
+        puts("\t|        |    |  \\    |    |        |");
+        puts("\t|--------|    |   \\   |    |--------|");
+        puts("\t|        |    |    \\  |    |        |");
+        puts("\t|        |    |     \\ |    |        |");
+        puts("\t|        |    |      \\|    |        |"); 
+        sleep(1);
+        LIMPAR_TELA;
+        puts("\n\n");
+        puts("\t|--------|    |\\      |    |--------|  |---------|    |----------|   |--------| ");
+        puts("\t|        |    | \\     |    |        |  |              |          |   |        | ");
+        puts("\t|        |    |  \\    |    |        |  |              |\\         |   |        |");
+        puts("\t|--------|    |   \\   |    |--------|  |   |-----|    |  \\-------|   |--------|");
+        puts("\t|        |    |    \\  |    |        |  |         |    |    \\         |        |");
+        puts("\t|        |    |     \\ |    |        |  |         |    |      \\       |        |");
+        puts("\t|        |    |      \\|    |        |  |---------|    |        \\     |        |"); 
+        sleep(2);
+    } 
+    // 
     LIMPAR_TELA;
     puts("\n\n");
-    puts("\t\t |--------|    |\\      |    |--------|  |---------|    |----------|   |--------|       |\\       /|    |--------|       ");
-    puts("\t\t |        |    | \\     |    |        |  |              |          |   |        |       |  \\   /  |    |               ");
-    puts("\t\t |        |    |  \\    |    |        |  |              |\\         |   |        |       |   \\ /   |    |               ");
-    puts("\t\t |--------|    |   \\   |    |--------|  |   |-----|    |  \\-------|   |--------|  ===  |    v    |    |--------|       ");
-    puts("\t\t |        |    |    \\  |    |        |  |         |    |    \\         |        |       |         |    |               ");
-    puts("\t\t |        |    |     \\ |    |        |  |         |    |      \\       |        |       |         |    |               ");
-    puts("\t\t |        |    |      \\|    |        |  |---------|    |        \\     |        |       |         |    |--------|      "); 
-
+    puts("\t|--------|    |\\      |    |--------|  |---------|    |----------|   |--------|       |\\       /|    |--------|   ");
+    puts("\t|        |    | \\     |    |        |  |              |          |   |        |       |  \\   /  |    |            ");
+    puts("\t|        |    |  \\    |    |        |  |              |\\         |   |        |       |   \\ /   |    |           ");
+    puts("\t|--------|    |   \\   |    |--------|  |   |-----|    |  \\-------|   |--------|  ===  |    v    |    |--------|   ");
+    puts("\t|        |    |    \\  |    |        |  |         |    |    \\         |        |       |         |    |            ");
+    puts("\t|        |    |     \\ |    |        |  |         |    |      \\       |        |       |         |    |            ");
+    puts("\t|        |    |      \\|    |        |  |---------|    |        \\     |        |       |         |    |--------|   ");
+    sleep(1);
 }
 
 
 /*-------------------------------------------------------------------
                     Mostra menu de opções
 -------------------------------------------------------------------*/
-void mostrar_Menu (void)
+void exibir_menu(void)
 {
     char op;
     do
     {
-        cabecalho();
+        exibir_cabecalho(1);
         limpa_buffer();
-        puts("\n\n\n\n\t\t >>> Suas opcoes sao: \n");
-        puts("\t\t\t (J) >> Jogar <<");
-        puts("\t\t\t (R) >> Consultar a tabela de recordes <<");
-        puts("\t\t\t (A) >> Ajuda <<");
-        puts("\t\t\t (S) >> Sair  <<");    
-        puts("\n\t\t >>> O que deseja? ");
+        puts("\n\n>>> Suas opcoes sao:");
+        puts("\n\t(J) >> Jogar <<");
+        puts("\t(R) >> Consultar a tabela de recordes <<");
+        puts("\t(A) >> Ajuda <<");
+        puts("\t(S) >> Sair  <<");    
+        puts("\n>>> O que deseja? ");
     
         op = toupper(getchar()); 
         switch (op)
         {
             case 'J':
-                escolher_Nivel(); 
+                escolher_nivel(); 
                 break;
             case 'R':
-                mostrar_Recordes(); 
+                exibir_recordes(); 
                 break;
             case 'A': 
-                ajudar(); 
+                exibir_ajuda(); 
                 break;
             case 'S': 
                 break;
             default: 
-                puts("\n >>> Opcao invalida <<<");
-                Sleep(1500); 
+                puts("\n>>> Opcao invalida <<<");
+                sleep(2); 
                 LIMPAR_TELA; 
                 break;
         }
@@ -108,35 +188,34 @@ void mostrar_Menu (void)
 /*-------------------------------------------------------------------
                 Escolhe nível de dificuldade do jogo
 -------------------------------------------------------------------*/
-void escolher_Nivel(void)
+void escolher_nivel(void)
 {
     char nivel;
     do
     {
 		limpa_buffer();
-        //nivel = 0;
-        cabecalho();
-        puts("\n\n\n\n\t\t >>> Niveis de jogo: \n");
-        puts("\t\t\t (1) >>  Facil  <<");
-        puts("\t\t\t (2) >>  Medio  <<");
-        puts("\t\t\t (3) >> Dificil <<");
-        puts("\n\t\t >>> Escolha um nivel para jogar: ");
+        exibir_cabecalho(0);
+        puts("\n\n>>> Niveis de jogo: \n");
+        puts("\t(1) >>  Facil  <<");
+        puts("\t(2) >>  Medio  <<");
+        puts("\t(3) >> Dificil <<");
+        puts("\n>>> Escolha um nivel para jogar: ");
         nivel = getchar();
 
        switch (nivel)
        {
             case '1' : 
-                jogar("nivel1.txt", 16); 
+                jogar(NIVEL1); 
                 break;
             case '2' : 
-                jogar("nivel2.txt", 11); 
+                jogar(NIVEL2); 
                 break;
             case '3' : 
-                jogar("nivel3.txt", 6); 
+                jogar(NIVEL3); 
                 break;
             default : 
                 puts("\n >>> Opcao invalida <<<");
-                Sleep(1500); 
+                sleep(2); 
                 LIMPAR_TELA; 
                 break;
         }
@@ -147,138 +226,146 @@ void escolher_Nivel(void)
 /*-------------------------------------------------------------------
                         Jogar partida
 -------------------------------------------------------------------*/
-void jogar(char dificuldade[11], int tam) 
-{	
-    char* palavra_Escolhida; 
-    char* letras_Disponiveis;
-    char* palavra;
+void jogar(char dificuldade[11]) 
+{
+    exibir_cabecalho(0);
+    
+    // String contendo as letras sorteadas e disponibilizadas ao usuário.
+    char* letras_disponiveis;
+    // String contendo a tentativa de palavra inserida pelo usuário a ser validada.
+    char* palavra_inserida;
+    // Vetor de strings contendo todas as palavras já validadas.
+    char* palavras_pontuadas[200]; 
+    // Inteiro que controla a quantidade de palavras já validadas.
     int cont_palavras = 0;
-    char *palavras_pontuadas[200]; 
-	
-	puts("\n\t\t >>> Qual sera seu apelido??");
-	scanf("%s", jogo[num_jogos].nome);
-	
-	time_t segundos = time(&segundos);
+    // Inteiro que contém o tamanho máximo das palavras do nível atual
+    int tam;
+
+    if(dificuldade == NIVEL1)
+        tam = 16;
+    else if(dificuldade == NIVEL2)
+        tam = 11;
+    else if(dificuldade == NIVEL3)
+        tam = 6;
+    else
+    {
+        puts("\n\n>>> Opção de nível não é válida. Finalizando execução.");
+        sleep(3);
+        exit(1);        
+    }
+
+    letras_disponiveis = (char*) calloc(tam, sizeof(char));
+    palavra_inserida = (char*) calloc(tam, sizeof(char));
+
+    if(!letras_disponiveis || !palavra_inserida)
+    {
+        puts("\n\n>>> Falha na alocação de memória. Encerrando a execução.");
+        sleep(3);
+        exit(1);
+    }
+
+	letras_disponiveis = ordenar_alfabeticamente(escolher_palavra(dificuldade, tam));
+
+	time_t segundos = time(NULL);
 	struct tm *data_hora_atual;
 	data_hora_atual = localtime(&segundos);
+
 	*(jogo + num_jogos)->data.dia = data_hora_atual->tm_mday;
 	*(jogo + num_jogos)->data.mes = data_hora_atual->tm_mon + 1;
 	*(jogo + num_jogos)->data.ano = data_hora_atual->tm_year + 1900;
 
-    if( !(palavra_Escolhida = (char*) calloc(tam, sizeof(char))) )
-    {
-        puts("\n >> Erro de memoria!! encerrando o jogo <<");
-        Sleep(1500);
-        exit(1);
-    }
+    puts("\n>>> Qual será seu apelido? ");
+	scanf("%s", jogo[num_jogos].nome);
+	
+    printf("\nMuito bem, %s, PREPARE-SE! Sua partida começará em 3...2...1...\n", jogo[num_jogos].nome);
+    limpa_buffer();
+    sleep(5);
 
-    if( !(letras_Disponiveis = (char*) calloc(tam, sizeof(char))) )
-    {
-        puts("\n >> Erro de memoria!! encerrando o jogo <<");
-        Sleep(1500);
-        exit(1);
-    }
-
-    if( !(palavra = (char*) calloc(tam, sizeof(char))) )
-    {
-        puts("\n >> Erro de memoria!! encerrando o jogo <<");
-        Sleep(1500);
-        exit(1);
-    }
-
-    palavra_Escolhida = escolher_Palavra( dificuldade, tam ); 
-	letras_Disponiveis = ordenar ( palavra_Escolhida );
 	time_t tempo = 0;
 	do 
     {
-		time_t segundos_i = time(&segundos_i);
-		cabecalho();
+		time_t segundos_i = time(NULL);
 
-		puts("\n\n\n\n\t\tAs suas letras disponiveis sao:\n\n");
-        printf("\t\t\t");
+		exibir_cabecalho(0);
+		puts("\n\nAs suas letras disponiveis sao:\n");
 		for(int i = 0; i < (tam-1); i++)
 		{
-			printf(" < %c > ", *(letras_Disponiveis+i));
+			printf(" < %c > ", *(letras_disponiveis+i));
 		}
-		
-        limpa_buffer();
-		puts("\n\n\n\n\t\t>> Monte uma palavra:\n");
-		fgets(palavra, tam, stdin);
 
-        if( (validar_Palavra( fopen("palavra.txt", "r"), palavra, tam, letras_Disponiveis, cont_palavras, palavras_pontuadas )) == 1 )
+		puts("\n\n>> Monte uma palavra:\n");
+		fgets(palavra_inserida, tam, stdin);
+
+        switch( validar_palavra(palavra_inserida, tam, letras_disponiveis, palavras_pontuadas, cont_palavras) )
         {
-            puts("\n\n\n\n\t\t>>> Sua palavra eh muito pequena!");
-            getchar();
+            case 0: 
+                puts("\n\n>>> Palavra valida!");                
+                cont_palavras = guarda_palavra_valida(palavra_inserida, palavras_pontuadas, cont_palavras);
+                break;
+            case 1:
+                puts("\n\n>>> Sua palavra eh muito pequena! <<<");
+                break;
+            case 2:
+                puts("\n\n>>> Você ja digitou essa palavra! <<<");
+                break;
+            case 3:
+                puts("\n\n>>> Por favor, use somente letras disponiveis <<<");
+                break;
+            case 4:
+                puts("\n\n>>> Por favor, use somente a quantidade de letras disponiveis <<<");
+                break;
+            case 5:
+                puts("\n\n>>> Essa palavra nao existe! <<<");
+                break;
+            default:
+    			puts("\n\n>>> Resultado inesperado! <<<");
+                break;
         }
-        else if( (validar_Palavra( fopen("palavra.txt", "r"), palavra, tam, letras_Disponiveis, cont_palavras, palavras_pontuadas )) == 2 )
-        {
-            puts("\n\n\n\n\t\t>>> Você ja digitou essa palavra!");
-            getchar();
-        }
-        else if( (validar_Palavra( fopen("palavra.txt", "r"), palavra, tam, letras_Disponiveis, cont_palavras, palavras_pontuadas )) == 3 )
-        {
-            puts("\n\n\n\n\t\t>>> Por favor, use somente letras disponiveis");
-            getchar();
-        } 
-        else if( (validar_Palavra( fopen("palavra.txt", "r"), palavra, tam, letras_Disponiveis, cont_palavras, palavras_pontuadas )) == 4 )
-        {
-            puts("\n\n\n\n\t\t>>> Por favor, use somente a quantidade de letras disponiveis");
-            getchar();
-        }
-        else if( (validar_Palavra( fopen("palavra.txt", "r"), palavra, tam, letras_Disponiveis, cont_palavras, palavras_pontuadas )) == 0 )
-        {
-            puts("\n\n\n\n\t\t>>> Palavra valida!");                
-            cont_palavras = guarda_Palavra_Valida(palavras_pontuadas, cont_palavras, palavra);
-            getchar();                                     
-        }
-		else
-		{
-			puts("\n\n\n\n\t\t>>> Essa palavra nao existe!");
-            getchar();
-		}
-		time_t segundos_f = time(&segundos_f);
-		tempo = tempo + (segundos_f - segundos_i);
-	}
-	while(tempo < 120);
+
+		tempo += time(NULL) - segundos_i;
+        sleep(1);
+
+	} while(tempo < 120);
 	
-	(jogo + num_jogos)->scores = calcular_Pontuacao(palavras_pontuadas, cont_palavras);
+    puts("\n\n\n\n>>> TEMPO ESGOTADO!");
+    sleep(2);
+    puts("\nPressione qualquer tecla para prosseguir...");
+    limpa_buffer();
 
-	printf("\n\n\n\n\t\t >>> TEMPO ESGOTADO! \n");
-    Sleep(2500);
-
-    cabecalho();
-	printf("\n\n\n\n\t\t >>> Voce fez %d pontos! Muito bem!!\n\n\n", (jogo + num_jogos)->scores);
-        num_jogos++;
+	(jogo + num_jogos)->scores = calcular_pontuacao(palavras_pontuadas, cont_palavras);
 
 	char op;
     do
     {
-        limpa_buffer();
-        puts("\n\n\n\n\t\t >>> Pressione < J > para jogar novamente, ou < M > para voltar ao menu principal: ");
+        
+        exibir_cabecalho(1);
+	    printf("\n\n\n\n>>> PARABENS!! Voce fez %d pontos! Muito bem!!\n", (jogo + num_jogos)->scores);
+        puts("\n\n>>> Pressione < J > para jogar novamente ou < M > para voltar ao menu principal:");
         op = toupper(getchar());
         switch (op)
         { 
             case 'J':
-                escolher_Nivel(); 
+                escolher_nivel(); 
                 break;
             case 'M': 
-                mostrar_Menu(); 
+                exibir_menu(); 
                 break;
             default: 
                 puts("\n >>> Opcao invalida <<<");
-                Sleep(1500); 
-                LIMPAR_TELA; 
+                sleep(1);
+                break;
         }
-    }
-    while(op != 'J' && op !='M');
+    } while(op != 'J' && op !='M');
+
+    num_jogos++;
 }
 
 /*-------------------------------------------------------------------
             Mostra a tabela de pontuação dos jogadores 
 -------------------------------------------------------------------*/
-void mostrar_Recordes(void)
+void exibir_recordes(void)
 {
-	cabecalho();
+	exibir_cabecalho(1);
 
     if(num_jogos == 0)
     {
@@ -292,14 +379,14 @@ void mostrar_Recordes(void)
             switch (op)
             { 
                 case 'J':
-                    escolher_Nivel(); 
+                    escolher_nivel(); 
                     break;
                 case 'M': 
-                    mostrar_Menu(); 
+                    exibir_menu(); 
                     break;
                 default: 
                     puts("\n >>> Opcao invalida <<<");
-                    Sleep(1500); 
+                    sleep(1500); 
                     LIMPAR_TELA; 
                     break;
             }
@@ -318,16 +405,16 @@ void mostrar_Recordes(void)
     puts("\n\n\n\n\t\t >>> Pressione qualquer tecla para voltar ao menu principal: ");
     limpa_buffer();
     getchar();
-    mostrar_Menu();
+    exibir_menu();
 	return;
 }
 
 /*-------------------------------------------------------------------
                             Como Jogar 
 -------------------------------------------------------------------*/
-void ajudar(void)
+void exibir_ajuda(void)
 {
-    cabecalho();
+    exibir_cabecalho(1);
     puts("\n\n\n\n\t\tAnagra-me eh um jogo cujo o objetivo eh formar o maior numero possivel de palavras                          ");
     puts("\t\tultilizando um conjunto de letras de uma palavra secreta sorteada de um dicionario.                       \n");
     puts("\t\tA cada partida uma nova palavra secreta eh sorteada, e suas letras sao embaralhadas                         ");
@@ -342,7 +429,7 @@ void ajudar(void)
     puts("\n\n\n\n\t\t >>> Pressione qualquer tecla para voltar ao menu principal:                                        ");
     limpa_buffer();
     getchar();
-    mostrar_Menu();
+    exibir_menu();
 }
 
 void limpa_buffer(void)

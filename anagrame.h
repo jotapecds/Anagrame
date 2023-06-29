@@ -38,13 +38,27 @@ typedef struct                                   // Estrutura PLAYER, para armaz
 
 /*
 **---------------------------------------------------------------------------------------
-**                                    Variáveis globais
+**                           Definições e Variáveis globais
 **---------------------------------------------------------------------------------------
 */
 
-_PLAYER *jogo;                                   // Estruturas com os dados nomes, pontuações e datas das partidas dos jogadores
-int num_jogos;                                   // Quantidade de partidas executadas
+// Nome do arquivo com as palavras do nível 1
+#define NIVEL1 "nivel1.txt"
+// Nome do arquivo com as palavras do nível 2
+#define NIVEL2 "nivel2.txt"
+// Nome do arquivo com as palavras do nível 3
+#define NIVEL3 "nivel3.txt" 
+// Nome do arquivo de dicionário
+#define DICIONARIO "dicionario.txt"
+// Quantidade de palavras no dicionário
+#define TAM_DIC 320076
 
+// Estruturas com os dados nomes, pontuações e datas das partidas dos jogadores
+_PLAYER *jogo;
+// Quantidade de partidas executadas
+int num_jogos;                                   
+// Vetor que armazena todas as palavras do dicionário
+char* dicionario[TAM_DIC];
 
 /*
 **---------------------------------------------------------------------------------------
@@ -52,23 +66,43 @@ int num_jogos;                                   // Quantidade de partidas execu
 **---------------------------------------------------------------------------------------
 */
 
-int inicializar();                               // Função responsável por preparar todo o ambiente para que o jogo se inicie 
+/* Função responsável por preparar todo o ambiente para que o jogo se inicie. */
+int inicializar(void); 
 
-void processar();                                // Função responsável por processar todos os dados do jogo e das partidas
+/* 
+* Função responsável por iniciar e distribuir o fluxo de execução de acordo com a opção. 
+*
+* op -> indica a opção de processamento: 
+*       (0) Padrão: Exibir menu inicial;
+*       (1) Customizado: Iniciar partida no nível 1;
+*       (2) Customizado: Iniciar partida no nível 2;
+*       (3) Customizado: Iniciar partida no nível 3;
+*/
+void processar(int op);
 
-void terminar();                                 // Função responsável por encerrar todas as tarefas e finalizar o programa
+/* Função responsável por encerrar todas as tarefas e finalizar o programa. */
+void terminar(void);
 
-void cabecalho();                                // Função responsável por exibir um cabeçalho na tela para o usuário
+/*
+* Função responsável por imprimir o cabeçalho do jogo na tela.
+* 
+* op -> indica a opção de cabeçalho: 
+*       (0) Cabeçalho padrão;
+*       (1) Cabecalho customizado;
+*/
+void exibir_cabecalho(int op);
 
-void mostrar_Menu (void);                        // Função responsável por exibir o menu principal de opções do jogo para o usuário
+// Função responsável por exibir o menu principal de opções do jogo para o usuário
+void exibir_menu(void);
 
-void escolher_Nivel(void);                       // Função responsável por exibir um menu com os níveis de jogo para o usuário
+void escolher_nivel(void);                       // Função responsável por exibir um menu com os níveis de jogo para o usuário
 
-void jogar(char dificuldade[11], int tam);       // Função responsável pela partida em si
+// Função que dá início e controla uma nova partida
+void jogar(char dificuldade[11]);
 
-void ajudar(void);                               // Função responsável por exibir um texto informativo ao usuário
+void exibir_ajuda(void);                               // Função responsável por exibir um texto informativo ao usuário
 
-void mostrar_Recordes(void);                     // Função responsável por exibir os records dos jogadores
+void exibir_recordes(void);                     // Função responsável por exibir os records dos jogadores
 
 void limpa_buffer(void);                         // Função responsável por limpar o buffer do teclado
 
