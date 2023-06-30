@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include "anagrame.h"
 #include "palavras.c"
+#include "timer.h"
 
 /* 
 ** Módulo anagrame.c
@@ -69,6 +70,9 @@ void processar(int op)
             break;
         case 3: 
             jogar(NIVEL3); 
+            break;
+        case 4: 
+            testar_desempenho(); 
             break;
         default: 
             exibir_menu();
@@ -325,7 +329,7 @@ void jogar(char dificuldade[11])
 		tempo += time(NULL) - segundos_i;
         sleep(1);
 
-	} while(tempo < 120);
+	} while(tempo < 10);
 	
     puts("\n\n\n\n>>> TEMPO ESGOTADO!");
     sleep(2);
@@ -430,6 +434,71 @@ void exibir_ajuda(void)
     limpa_buffer();
     getchar();
     exibir_menu();
+}
+
+/*-------------------------------------------------------------------
+                            Teste de desempenho 
+-------------------------------------------------------------------*/
+void testar_desempenho (void)
+{
+    int tam = 35;
+    char palavra[tam];
+    double ini_t_conc, fim_t_conc, ini_t_seq, fim_t_seq;
+    int resultado_conc, resultado_seq;
+    char repetir = 'S';
+    do
+    {
+        exibir_cabecalho(0);
+        puts("\n\n>>> ATENÇÃO: ÁREA DE TESTES <<<");
+        puts("\n\nPressione qualquer tecla para iniciar os testes...");
+        limpa_buffer();
+
+        exibir_cabecalho(0);
+        puts("\n\n\n> Digite uma palavra:\n");
+        fgets(palavra, tam, stdin);
+
+        puts("\n> Agora entre com a quantidade de threads que deseja utilizar na busca concorrente:\n");
+        scanf("%d", &num_threads);
+
+        puts("\n\nPressione qualquer tecla para iniciar os testes...");
+        limpa_buffer();
+        exibir_cabecalho(0);
+
+        // Validando se a palavra existe no dicionário (concorrente)
+        GET_TIME(ini_t_conc);
+        int resultado_conc = validar_palavra_existente(palavra);
+        GET_TIME(fim_t_conc);    
+
+        // Validando se a palavra existe no dicionário (Sequêncial)
+        GET_TIME(ini_t_seq);
+        resultado_seq = 5;
+        for (int i = 0; i < TAM_DIC; i++)
+        {
+            if( strcmp(palavra, dicionario[i]) == 0 ){
+                resultado_seq = 0;
+            }
+        }
+        GET_TIME(fim_t_seq);
+
+        puts("\n\nResultado concorrente:");
+        resultado_conc == 0 ? 
+            puts(" > Palavra Existente!"): 
+            puts(" > Palavra Inexistente.");
+        printf(" > Tempo da busca: %f segundos.\n", fim_t_conc - ini_t_conc);
+
+        puts("\n\nResultado sequêncial:");
+        resultado_seq == 0 ? 
+            puts(" > Palavra Existente!"):
+            puts(" > Palavra Inexistente.");
+        printf(" > Tempo da busca: %f segundos.\n", fim_t_seq - ini_t_seq);
+
+        puts("\n\nDeseja realizar um novo teste? (S)-> Sim | (N)-> Não");
+        repetir = getchar();
+
+    } while (toupper(repetir) == 'S');
+
+    puts("Ok! Até logo!");
+    exit(0);
 }
 
 void limpa_buffer(void)

@@ -23,6 +23,9 @@ int validar_palavra(char *palavra_proc, int tam, char *letras_Disponiveis, char 
 /* Função responsável por armazenar palavras válidas digitadas pelo usuário */
 int guarda_palavra_valida(char *palavra, char *palavras_pontuadas[], int cont_palavras);
 
+/* Função que retorna uma string dada reordenada em ordem alfabética */
+char* ordenar_alfabeticamente (char *palavra_Escolhida);
+
 /* Função responsável por calcular a pontuação do jogador ao final da partida */
 int calcular_pontuacao(char* palavras_pontuadas[], int cont_palavras);
 

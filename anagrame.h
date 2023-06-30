@@ -22,14 +22,16 @@
 **---------------------------------------------------------------------------------------
 */
 
-typedef struct                                   // Estrutura DATA
+// Estrutura DATA
+typedef struct
 {
     char dia[3];
     char mes[3];
     int ano[5];
 }_DATA;
 
-typedef struct                                   // Estrutura PLAYER, para armazenar nome do jogador, sua pontuação e a data da partida
+// Estrutura PLAYER, para armazenar nome do jogador, sua pontuação e a data da partida
+typedef struct
 {
     char nome[20];
     int scores;
@@ -73,10 +75,11 @@ int inicializar(void);
 * Função responsável por iniciar e distribuir o fluxo de execução de acordo com a opção. 
 *
 * op -> indica a opção de processamento: 
-*       (0) Padrão: Exibir menu inicial;
-*       (1) Customizado: Iniciar partida no nível 1;
-*       (2) Customizado: Iniciar partida no nível 2;
-*       (3) Customizado: Iniciar partida no nível 3;
+*       (0) -> Padrão: Exibir menu inicial;
+*       (1) -> Customizado: Iniciar partida no nível 1;
+*       (2) -> Customizado: Iniciar partida no nível 2;
+*       (3) -> Customizado: Iniciar partida no nível 3;
+*       (4) -> Customizado: Iniciar testes de desempenho;
 */
 void processar(int op);
 
@@ -92,18 +95,25 @@ void terminar(void);
 */
 void exibir_cabecalho(int op);
 
-// Função responsável por exibir o menu principal de opções do jogo para o usuário
+/* Função responsável por exibir o menu principal de opções do jogo para o usuário */
 void exibir_menu(void);
 
-void escolher_nivel(void);                       // Função responsável por exibir um menu com os níveis de jogo para o usuário
+/* Função responsável por exibir um menu com os níveis de jogo para o usuário */
+void escolher_nivel(void);
 
-// Função que dá início e controla uma nova partida
+/* Função que dá início e controla uma nova partida */
 void jogar(char dificuldade[11]);
 
-void exibir_ajuda(void);                               // Função responsável por exibir um texto informativo ao usuário
+/* Função responsável por exibir um texto informativo ao usuário */
+void exibir_ajuda(void);
 
-void exibir_recordes(void);                     // Função responsável por exibir os records dos jogadores
+/* Função responsável por exibir os records dos jogadores */
+void exibir_recordes(void);
 
-void limpa_buffer(void);                         // Função responsável por limpar o buffer do teclado
+/* Realiza buscas de palavras no dicionário comparando as versões sequêncial e concorrente */
+void testar_desempenho(void);
+
+/* Função responsável por limpar o buffer do teclado */
+void limpa_buffer(void);
 
 #endif //ANAGRAME_H_INCLUDED

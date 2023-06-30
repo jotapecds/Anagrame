@@ -5,6 +5,8 @@
 #include <ctype.h>
 #include <regex.h>
 #include "anagrame.h"
+#include "threading.c"
+#include "timer.h"
 
 /* 
 ** Módulo palavras.c
@@ -113,16 +115,8 @@ int validar_palavra(char *palavra_proc, int tam, char *letras_Disponiveis, char 
     }
     for(int i = 0; i < tam; i++)
         letras_Disponiveis[i] = guarda_letras_Disponiveis[i];
-    
-    // Validando se a palavra existe no dicionário
-    for (int i = 0; i < TAM_DIC; i++)
-    {
-        if( strcmp(palavra_proc, dicionario[i]) == 0 ){
-            return 0;
-        }
-    }
 
-	return 5;
+    return validar_palavra_existente(palavra_proc);
 }
 
 int guarda_palavra_valida(char *palavra, char *palavras_pontuadas[], int cont_palavras)
