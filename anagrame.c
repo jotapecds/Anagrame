@@ -329,7 +329,7 @@ void jogar(char dificuldade[11])
 		tempo += time(NULL) - segundos_i;
         sleep(1);
 
-	} while(tempo < 10);
+	} while(tempo < 120);
 	
     puts("\n\n\n\n>>> TEMPO ESGOTADO!");
     sleep(2);
