@@ -362,6 +362,8 @@ void jogar(char dificuldade[11])
     } while(op != 'J' && op !='M');
 
     num_jogos++;
+    free(letras_disponiveis);
+    free(palavra_inserida);
 }
 
 /*-------------------------------------------------------------------

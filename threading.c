@@ -22,8 +22,6 @@ int validar_palavra_existente(char* palavra)
     for (int i = 0; i < num_threads; i++)
     {
         pthread_join(threads[i], NULL);
-        free(threads + i);
-        free(args + i);
     }
 
     if ( achou )
@@ -36,6 +34,7 @@ int validar_palavra_existente(char* palavra)
 
 void* busca_palavra (void* args)
 {
+
     int tid = ((_ARGS*) args)->tid;
     char* palavra = ((_ARGS*) args)->palavra;
 
@@ -51,7 +50,6 @@ void* busca_palavra (void* args)
         }
         else break;
     }
-    
-    free(palavra);
+
     pthread_exit(NULL);
 }
